@@ -1,35 +1,61 @@
 document.addEventListener("DOMContentLoaded", function () {
   // API Integration
   const apiUrl = "https://dummyjson.com/products";
+  const productContainer = document.getElementById("productContainer");
+  const searchInput = document.getElementById("searchInput");
 
-  fetch(apiUrl)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`Network response was not ok: ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      //Data Display
-      displayProducts(data.products);
-    })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-    });
+  // Search functionality on input change
+  searchInput.addEventListener("input", function () {
+    const searchTerm = searchInput.value;
+    fetchProducts(searchTerm);
+  });
+
+  // Initial fetch and display of products
+  fetchProducts();
+
+  function fetchProducts(searchTerm = "") {
+    // Fetch data from the API
+    fetch(apiUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            `Network response was not ok: ${response.statusText}`
+          );
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Filter products based on search term
+        const filteredProducts = data.products.filter((product) => {
+          return (
+            product.title.includes(searchTerm) ||
+            product.description.includes(searchTerm) ||
+            product.category.includes(searchTerm)
+          );
+        });
+
+        // Display filtered products
+        displayProducts(filteredProducts);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }
 
   function displayProducts(product) {
-    const productContainer = document.getElementById("productContainer");
+    productContainer.innerHTML = "";
     product.forEach((product) => {
       const productElement = document.createElement("div");
       productElement.classList.add("product");
 
-      productElement.addEventListener('click', () => {
+      productElement.addEventListener("click", () => {
         openProductDetailsPage(product.id);
-    });
+      });
 
       // Display product information
       productElement.innerHTML = `
                 <h2>${product.title}</h2>
+                <p>Description: ${product.description}</p>
                 <p>Price: ${product.price}$</p>
                 <p>Discount: ${product.discountPercentage}%</p>
                 <p>Category: ${product.category}</p>
