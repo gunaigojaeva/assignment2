@@ -23,6 +23,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const productElement = document.createElement("div");
       productElement.classList.add("product");
 
+      productElement.addEventListener('click', () => {
+        openProductDetailsPage(product.id);
+    });
+
       // Display product information
       productElement.innerHTML = `
                 <h2>${product.title}</h2>
@@ -35,5 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       productContainer.appendChild(productElement);
     });
+  }
+  function openProductDetailsPage(productId) {
+    // Redirect to the product details page with the product ID as a query parameter
+    window.location.href = `productDetails.html?productId=${productId}`;
   }
 });
