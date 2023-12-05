@@ -3,17 +3,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const apiUrl = "https://dummyjson.com/products";
   const productContainer = document.getElementById("productContainer");
   const searchInput = document.getElementById("searchInput");
+  const categoryFilter = document.getElementById("categoryFilter");
 
   // Search functionality on input change
   searchInput.addEventListener("input", function () {
     const searchTerm = searchInput.value;
-    fetchProducts(searchTerm);
+    const selectedCategory = categoryFilter.value;
+    fetchProducts(searchTerm, selectedCategory);
+  });
+
+  categoryFilter.addEventListener("change", function () {
+    const searchTerm = searchInput.value;
+    const selectedCategory = categoryFilter.value;
+    fetchProducts(searchTerm, selectedCategory);
   });
 
   // Initial fetch and display of products
   fetchProducts();
 
-  function fetchProducts(searchTerm = "") {
+  function fetchProducts(searchTerm = "", selectedCategory = "all") {
     // Fetch data from the API
     fetch(apiUrl)
       .then((response) => {
@@ -27,11 +35,14 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         // Filter products based on search term
         const filteredProducts = data.products.filter((product) => {
-          return (
+          const matchesSearchTerm =
             product.title.includes(searchTerm) ||
             product.description.includes(searchTerm) ||
-            product.category.includes(searchTerm)
-          );
+            product.category.includes(searchTerm);
+
+          const matchesCategory =
+            selectedCategory === "all" || product.category === selectedCategory;
+          return matchesSearchTerm && matchesCategory;
         });
 
         // Display filtered products
